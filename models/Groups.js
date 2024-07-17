@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const memberSchema = {
+const memberSchema = new Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+  },
   firstName: {
     type: String,
     required: true,
@@ -14,9 +18,9 @@ const memberSchema = {
     type: String,
     required: true,
   },
-};
+});
 
-const groupSchema = {
+const groupSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -34,6 +38,8 @@ const groupSchema = {
     type: memberSchema,
     required: true,
   },
-};
+});
 
-module.exports = mongoose.model('groups', groupSchema);
+const groups = mongoose.model('groups', groupSchema);
+const members = mongoose.model('member', memberSchema);
+module.exports = { groups, members };
