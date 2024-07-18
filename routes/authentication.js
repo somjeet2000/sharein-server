@@ -238,8 +238,6 @@ router.put(
         }
       }
 
-      console.log(user);
-      console.log(user._id.toString(), request.user.id);
       // Check if user is the same person who edits his own account details.
       if (user._id.toString() !== request.user.id) {
         return response
