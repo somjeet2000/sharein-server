@@ -147,7 +147,7 @@ router.put(
         '-password, -confirmPassword'
       );
 
-      // If the cost has been modified then we have to paid_share, owed_share, net_balance
+      // If the cost has been modified then we have to modify the paid_share, owed_share, net_balance
       /*
         We can check this further
       */
@@ -209,6 +209,22 @@ router.delete('/delete_expense/:id', fetchuser, async (req, res) => {
     // If all the validation comes true, delete the expense.
     expense = await expenses.findByIdAndDelete(expenseId);
     res.json({ success: 'Expense has been deleted', expense: expense });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+// Router 4: Get the expense. GET:/api/v1/expenses/get_expense/:id. Login required.
+router.get('/get_expense/:id', fetchuser, async (req, res) => {
+  try {
+    const expenseID = req.params.id;
+    const expenseDetails = await expenses.findById(expenseID);
+    if (!expenseDetails) {
+      return res.status(401).json({ error: 'Not found in Database' });
+    }
+
+    // If group found, return the response
+    res.json(expenseDetails);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
