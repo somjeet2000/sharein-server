@@ -6,7 +6,7 @@ const connectToMongo = () => {
   mongoose
     .connect(mongoURI)
     .then(() => {
-      console.log('Success: Connected to Mongo DB');
+      console.log('Success: Connected to MongoDB');
     })
     .catch((error) => {
       console.log('Error connecting to Mongo DB:' + error);

@@ -30,8 +30,8 @@ router.post(
     body('password')
       .notEmpty()
       .withMessage('Password cannot be empty')
-      .isLength({ min: 6 })
-      .withMessage('Password must be atleast of 6 characters'),
+      .isLength({ min: 8 })
+      .withMessage('Password must be atleast of 8 characters'),
     // password must match with password and not empty.
     body('confirmPassword')
       .notEmpty()
