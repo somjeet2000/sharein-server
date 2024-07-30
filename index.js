@@ -18,3 +18,8 @@ app.use('/api/v1/expenses', require('./routes/expenses'));
 app.listen(port, () => {
   console.log(`ShareIn server listening on port ${port}`);
 });
+
+//Health Check
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'Everything is good here 👀' });
+});
