@@ -6,10 +6,10 @@ pipeline {
         }
     }
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentails') // Configured in Jenkins
+        DOCKERHUB_CREDENTIALS = withCredentials('dockerhub-credentails') // Configured in Jenkins
         IMAGE_NAME = 'somjeetsrimani/sharein-server'
         SONARQUBE_SERVER = 'http://localhost:9000'
-        SONARQUBE_TOKEN = credentails('sonarqube')
+        SONARQUBE_TOKEN = withCredentials('sonarqube')
     }
     stages {
         stage('Checkout Repository') {
