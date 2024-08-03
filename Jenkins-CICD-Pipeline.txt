@@ -1,0 +1,133 @@
+########## Jenkins CICD Pipeline for Server Deploy into Render ##########
+
+1. Create EC2 Instance in AWS [Recommended to use Free-tier].
+    Steps:
+        Installation Video AND How to Login - https://www.youtube.com/watch?v=zZfhAXfBvVA&list=RDCMUCnnQ3ybuyFdzvgv2Ky5jnAA&index=1
+
+2. Install Jenkins.
+    Pre-requisites:
+        Java(JDK)
+    
+    Run the below commands to install Java and Jenkins:
+        Install Java:
+            sudo apt update
+            sudo apt install openjdk-17-jre
+
+        Verify Java is installed:
+            java -version
+
+        Now, Proceed with Jenkins Installation:
+            curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
+                /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+            echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+                https://pkg.jenkins.io/debian binary/ | sudo tee \
+                /etc/apt/sources.list.d/jenkins.list > /dev/null
+            sudo apt-get update
+            sudo apt-get install jenkins
+    
+    Note: By default, Jenkins will not be accessible to the external world due to the inbound traffic restriction by AWS. Open port 8080 in the inbound traffic rules as show below.
+
+        EC2 > Instances > Click on
+        In the bottom tabs -> Click on Security
+        Security groups
+        Add inbound traffic rules (you can just allow TCP 8080 as well, in my case, I allowed All traffic).
+
+3. Login Jenkins.
+    Login to Jenkins using the below URL:http://<EC2-INSTANCE-PUBLIC-IP-ADDRESS>:8080 [You can get the ec2-instance-public-ip-address from your AWS EC2 console page]
+
+    Note: If you are not interested in allowing All Traffic to your EC2 instance 1. Delete the inbound traffic rule for your instance 2. Edit the inbound traffic rule to only allow custom TCP port 8080
+
+    After you login to Jenkins:
+        Run the command to copy the Jenkins Admin Password - sudo cat /var/lib/jenkins/secrets/initialAdminPassword - Enter the Administrator password
+
+        Click on Install suggested plugins [Wait for the Jenkins to Install suggested plugins]
+
+        Create First Admin User or Skip the step [If you want to use this Jenkins instance for future use-cases as well, better to create admin user]
+
+4. Install the Docker Pipeline plugin in Jenkins.
+    Log in to Jenkins.
+    Go to Manage Jenkins > Manage Plugins.
+    In the Available tab, search for "Docker Pipeline".
+    Select the plugin and click the Install button.
+    Restart Jenkins after the plugin is installed.
+
+5. Docker Slave Configuration.
+    Run the below command to Install Docker
+			sudo apt update
+			sudo apt install docker.io
+		
+	Grant Jenkins user and Ubuntu user permission to docker deamon.
+			sudo su - 
+			usermod -aG docker jenkins
+			usermod -aG docker ubuntu
+			systemctl restart docker
+			
+	Verify using the command -
+			docker run hello-world
+
+    [Note: After the Docker pipeline has been configured, Restart Jenkins. http://<EC2-INSTANCE-PUBLIC-IP-ADDRESS>:8080/restart] -> Click Yes.
+        (Wait for Jenkins to be restarted)
+
+6. Configure Webhooks in GitHub.
+	Click on the speific repository in github.
+	Go to your repository settings.
+	Navigate to "Webhooks" -> click "Add webhook".
+	    <JENKINS_URL>/github-webhook/
+	    Set content type to application/json.
+	    Select "Just the push event".
+
+7. Configure Sonarqube.
+    Install SonarQube:
+        Follow the official SonarQube installation guide to set up your SonarQube server.
+    
+    Configure SonarQube into the Local Machine:
+        Pre-requisites: Java
+
+        Open Browser and hit the URL - https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.4.0.54424.zip
+        
+        Unzip the downloaded file -> Copy the unzip folder to C Drive.
+
+        Add JAVA_HOME & JAVA_HOME_BIN in the environment variables in your computer:
+            Add C:\Program Files\Java\jdk-11 into the User variable for Local Machine. 
+            Add C:\Program Files\Java\jdk-11\bin into the System variable for Local Machine.
+        
+        Navigate path - C:\sonarqube-9.4.0.54424\bin\windows-x86-64 [Since, we have installed locally]:
+            Run StartSonar as administrator.
+            It will run automatically with the username - admin | password - admin
+
+        Verify Installation:
+            http://localhost:9000
+            It will ask for the password change. Change the password.
+
+        [Note: If you want to install SonarQube into your EC2 instance, you can install. But keep in mind it will take much space and CPU power, and it is not possible with the free-tier instance, you may go ahead with t2.large instaces with configuration(2 CPUs, 8 GiB RAM) and AWS will charge for it.]
+
+        [TODO: Add the steps to install SonarQube in EC2 instaces]
+    
+    Generate SonarQube Token:
+        Login to SonarQube server by hitting the URL - http://localhost:9000
+
+        Navigate to My Account -> Security -> Generate Tokens and create a new token for Jenkins.
+
+        Copy the token and keep it somewhere for reference
+
+8. Configure Jenkins for SonarQube
+    Install SonarQube Scanner Plugin:
+        Go to Manage Jenkins -> Manage Plugins -> Available.
+        Search for SonarQube Scanner and install it.
+    
+    Create Token in Jenkins:
+        Go to Manage Jenkins -> Credentials
+        Add the SonarQube generated.
+    
+    Configure SonarQube in Jenkins:
+        Go to Manage Jenkins -> Configure System.
+        Scroll down to SonarQube Servers and click Add SonarQube.
+        Enter the necessary details such as Name, Server URL, and the generated token.
+        
+    Install SonarQube Scanner CLI:
+        Go to Manage Jenkins -> Global Tool Configuration.
+        Scroll down to SonarQube Scanner and click Add SonarQube Scanner.
+        Enter a name and install it automatically or provide a custom path.
+
+
+7. Write Jenkinsfile.
