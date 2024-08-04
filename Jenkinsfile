@@ -1,9 +1,14 @@
 pipeline {
     agent {
         docker {
-            image 'node:20.15' // Use the node js docker image
+            image 'node:20' // Use the node js docker image
             args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker commands
         }
+    }
+
+    environment {
+        SONAR_TOKEN = credentials('SonarToken')
+        scannerHome = tool name: 'SonarScanner'
     }
 
     // Stage - Checkout Works
@@ -18,16 +23,13 @@ pipeline {
         stage('Static Code Analysis') {
             steps {
                 script {
-                    scannerHome = tool 'SonarScanner'
-                }
-                withSonarQubeEnv('SonarServer') {
-                    sh '''
-                    sonar-scanner \
-                        -Dsonar.projectKey=Sharein-Server \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url='http://localhost:9000' \
-                        -Dsonar.login='sonarqube'
-                    '''
+                    echo "========== Static Code Analysis Started =========="
+
+                    withSonarQubeEnv('SonarServer') {
+                        sh "${scannerHome}/bin/sonar-scanner --version"
+                    }
+
+                    echo "=========== Static Code Analysis Ended =========="
                 }
             }
         }
