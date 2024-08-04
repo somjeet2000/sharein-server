@@ -16,13 +16,11 @@ pipeline {
         }
 
         stage('Static Code Analysis') {
-            environment {
-                SONAR_URL = "http://localhost:9000/"
-                SONARQUBE_TOKEN = credentials('sonarqube')
-            }
             steps {
-                def scannerHome = tool 'SonarScanner';
-                withSonarQubeEnv(credentialsId: 'sonarqube') {
+                script {
+                    scannerHome = tool 'SonarScanner'
+                }
+                withSonarQubeEnv('SonarServer') {
                     sh "${scannerHome}/bin/sonar-scanner"
                 }
             }
