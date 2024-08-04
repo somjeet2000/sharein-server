@@ -6,11 +6,30 @@ pipeline {
         }
     }
 
+    // Stage - Checkout Works
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/somjeet2000/sharein-server.git']])
             }    
+        }
+
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://localhost:9000/"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh '''
+                    sonar-scanner \
+                    -Dsonar.projectKey=sharein-server \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=${SONAR_URL} \
+                    -Dsonar.login=${SONAR_AUTH_TOKEN}
+                    '''
+                }
+            }
         }
     }
 
