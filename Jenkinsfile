@@ -22,7 +22,7 @@ pipeline {
                 }
                 withSonarQubeEnv('SonarServer') {
                     sh '''
-                    ${scannerHome}/bin/sonar-scanner \
+                    sonar-scanner \
                         -Dsonar.projectKey=Sharein-Server \
                         -Dsonar.sources=. \
                         -Dsonar.host.url='http://localhost:9000' \
