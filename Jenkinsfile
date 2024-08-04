@@ -24,13 +24,13 @@ pipeline {
                     scannerHome = tool 'SonarScanner'
                 }
                 withSonarQubeEnv('SonarServer') {
-                    sh "
+                    sh '''
                     ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=Sharein-Server \
                         -Dsonar.sources=. \
                         -Dsonar.host.url='http://localhost:9000' \
                         -Dsonar.login=${SONAR_TOKEN}
-                    "
+                    '''
                 }
             }
         }
