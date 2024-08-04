@@ -24,11 +24,10 @@ pipeline {
             steps {
                 script {
                     echo "========== Static Code Analysis Started =========="
-                    sh "echo ${scannerHome}"
-                    withSonarQubeEnv('SonarServer') {
-                        sh "${scannerHome}/bin/sonar-scanner --version"
+                    sh "echo Sonar Home Path: ${scannerHome}"
+                    withSonarQubeEnv(credentialsId: '${SONAR_TOKEN}', installationName: 'SonarServer') {
+                        sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:6.1.0.4477:sonar'
                     }
-
                     echo "=========== Static Code Analysis Ended =========="
                 }
             }
