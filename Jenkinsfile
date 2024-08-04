@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     echo "========== Static Code Analysis Started =========="
-
+                    sh "echo ${scannerHome}"
                     withSonarQubeEnv('SonarServer') {
                         sh "${scannerHome}/bin/sonar-scanner --version"
                     }
