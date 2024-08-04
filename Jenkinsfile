@@ -17,9 +17,6 @@ pipeline {
 
         stage('Static Code Analysis') {
             steps {
-                environment {
-                    SONAR_TOKEN = 'sonarqube'
-                }
                 script {
                     scannerHome = tool 'SonarScanner'
                 }
@@ -29,7 +26,7 @@ pipeline {
                         -Dsonar.projectKey=Sharein-Server \
                         -Dsonar.sources=. \
                         -Dsonar.host.url='http://localhost:9000' \
-                        -Dsonar.login=${SONAR_TOKEN}
+                        -Dsonar.login='sonarqube'
                     '''
                 }
             }
