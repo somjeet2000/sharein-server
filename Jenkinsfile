@@ -1,11 +1,11 @@
 pipeline {
+    agent any
     // agent {
     //     docker {
     //         image 'node:20.15' // Use the node js docker image
     //         args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker commands
     //     }
-        agent any
-    }
+    // }
 
     environment {
         NODE_ENV = 'production'
