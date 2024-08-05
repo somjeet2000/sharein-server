@@ -13,6 +13,9 @@ pipeline {
         DOCKERHUB_CRED = 'DockerHub-Credentials'
         DOCKERHUB_REPO = 'somjeetsrimani/sharein-server'
         IMAGE_TAG = 'latest'
+        // Render Credentials
+        RENDER_API_KEY = credentials('RenderProduction')
+        RENDER_SERVICE_ID = credentials('Render-Service-ID-Production')
     }
     
     
@@ -81,6 +84,23 @@ pipeline {
                         sh 'docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD'
                         sh 'docker push $DOCKERHUB_REPO:$IMAGE_TAG'
                     }
+                }
+            }
+        }
+
+        stage('Deploy to Render') {
+            steps {
+                script {
+                    // Define the Render API endpoint
+                    def renderApiEndpoint = "https://api.render.com/deploy/${env.RENDER_SERVICE_ID}"
+                    
+                    // Trigger the deployment on Render
+                    sh '"
+                    curl -X POST ${renderApiEndpoint} \
+                        -H 'Authorization: Bearer ${env.RENDER_API_KEY}' \
+                        -H 'Content-Type: application/json' \
+                        -d '{"clearCache": false}'
+                    "'
                 }
             }
         }
