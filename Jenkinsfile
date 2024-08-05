@@ -95,12 +95,12 @@ pipeline {
                     def renderApiEndpoint = "https://api.render.com/deploy/${env.RENDER_SERVICE_ID}"
                     
                     // Trigger the deployment on Render
-                    sh '"
+                    sh """
                     curl -X POST ${renderApiEndpoint} \
                         -H 'Authorization: Bearer ${env.RENDER_API_KEY}' \
                         -H 'Content-Type: application/json' \
                         -d '{"clearCache": false}'
-                    "'
+                    """
                 }
             }
         }
