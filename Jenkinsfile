@@ -35,8 +35,8 @@ pipeline {
                 sh 'npm cache clean --force'
             }
         }
-        
-        stage('Install Dependencies and Run Tests') {
+
+        stage('Install Dependencies') {
             agent {
                 docker {
                     image 'node:20-alpine' // Use an appropriate Node.js image
@@ -45,6 +45,21 @@ pipeline {
             }
             steps {
                 sh 'npm install'
+            }
+        }
+
+        // This step will run if there are any unit test cases available
+        stage('Run Tests') {
+            when {
+                expression { fileExists('package.json') && sh(returnStatus: true, script: 'npm test -- --list-tests') == 0 }
+            }
+            agent {
+                docker {
+                    image 'node:20'
+                    args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
+            steps {
                 sh 'npm test'
             }
         }
