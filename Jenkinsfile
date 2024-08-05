@@ -15,14 +15,28 @@ pipeline {
         IMAGE_TAG = 'latest'
     }
     
-    // Stage - Checkout Works
+    
     stages {
+        // Stage - Checkout Works
         stage('Checkout') {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/somjeet2000/sharein-server.git']])
             }    
         }
 
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        // Stage - Build docker image works
         stage('Build Docker Image') {
             steps {
                 script {
@@ -31,6 +45,7 @@ pipeline {
             }
         }
 
+        // Stage - Push to Docker Hub works
         stage('Push to Docker Hub') {
             steps {
                 script {
