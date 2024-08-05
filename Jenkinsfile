@@ -39,7 +39,7 @@ pipeline {
         stage('Install Dependencies and Run Tests') {
             agent {
                 docker {
-                    image 'node:20' // Use an appropriate Node.js image
+                    image 'node:20-alpine' // Use an appropriate Node.js image
                     args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket
                 }
             }
