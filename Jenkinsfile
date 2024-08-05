@@ -29,6 +29,12 @@ pipeline {
             }    
         }
 
+        stage('Clean Node Modules') {
+            steps {
+                sh 'rm -rf node_modules'
+            }
+        }
+        
         stage('Install Dependencies and Run Tests') {
             agent {
                 docker {
