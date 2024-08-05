@@ -17,6 +17,11 @@ pipeline {
     
     
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
         // Stage - Checkout Works
         stage('Checkout') {
             steps {
