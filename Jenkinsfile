@@ -29,9 +29,10 @@ pipeline {
             }    
         }
 
-        stage('Clean Node Modules') {
+        stage('Clean Node Modules & Npm Cache') {
             steps {
                 sh 'rm -rf node_modules'
+                sh 'npm cache clean --force'
             }
         }
         
